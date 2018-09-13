@@ -10,6 +10,7 @@ from app.forms import QuestionForm
 from app.login_google import get_google_auth
 from config import Config
 from requests.exceptions import HTTPError
+from app.msgqueue import push_msg, get_result
 
 @app.route('/')
 @login_required
@@ -83,22 +84,22 @@ def logout():
     return redirect(url_for('index'))
 
 
-# @app.route("/", methods= ['GET', 'POST'])
-# def displayTextEditor():
-#     code = ''
-#     result = ''
-#     problem = getProblems(1)
-#     ex_len = len(problem['example'])
-#     if request.method == 'POST':
-#         inputs = getTestCase(1)
-#         code = request.form['code']
-#         # result = runcode(code, inputs) - just for subprocess.run
-#         # push msg to redis queue
-#         msg = json.dumps({"code": code, "inputs": inputs,
-#                           "prototype": "def sayHello(s)","handle": 38})
-#         push_msg(qname="msgQueue", msg=msg)
-#         time.sleep(10)
-#         result = get_result(qname="result")
-#
-#     return render_template("text_editor.html", code=code, result=result,
-#                             problem=problem, ex_len=ex_len)
+@app.route("/problem/<int:id>", methods= ['GET', 'POST'])
+def displayTextEditor(id):
+    code = ''
+    result = ''
+    problem = Problems.query.filter_by(id=id).first()
+
+    if request.method == 'POST':
+        inputs = TestCases.query(TestCases.input).filter_by(problem=id).all()
+        code = request.form['code']
+        # result = runcode(code, inputs) - just for subprocess.run
+        # push msg to redis queue
+        msg = json.dumps({"code": code, "inputs": inputs,
+                          "prototype": "def sayHello(s)","handle": 38})
+        push_msg(qname="msgQueue", msg=msg)
+        time.sleep(10)
+        result = get_result(qname="result")
+
+    return render_template("text_editor.html", code=code, result=result,
+                            problem=problem)

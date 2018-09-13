@@ -31,6 +31,7 @@ class Problems(db.Model):
     version = db.Column(db.Integer)
     question = db.Column(db.Text())
     solution = db.Column(db.Text())
+    testcases = db.relationship("TestCases", backref='problem', lazy='dynamic')
 
     def __repr__(self):
         return "<Problems {}".format(self.question)

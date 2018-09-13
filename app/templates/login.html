@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
 {% block body %}
-<a href="{{auth_url}}" class="btn btn-primary btn-block" style="padding: 15px 0;">Login with Google</a>
+
+<div class="google-login">
+    <a href="{{auth_url}}" class=btn btn-block btn-social btn-lg btn-google>
+      <span class="fa fa-google"></span>
+      Sign in with Google
+    </a>
+</div>
+<!-- <a href="{{auth_url}}" class="btn btn-primary btn-block" style="padding: 15px 0;">Login with Google</a> -->
+
 {% endblock %}

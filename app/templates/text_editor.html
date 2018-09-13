@@ -39,8 +39,8 @@
                 <h4>CS1 -> Assignment 3 -> Problem 3</h4>
             </div>
             <div class="row well">
-                <p><strong>Question {{problem['id']}}: {{problem['title']}}</strong></p>
-                <p>{{problem['question']}}</p>
+                <p><strong>Question {{problem.id}}: {{problem.title}}</strong></p>
+                <p>{{problem.question}}</p>
                 {% for e in problem['example'] %}
                 <p><b>Example {{e['id']}}: </b></p>
                 <ul>
@@ -53,20 +53,20 @@
                 <button class="btn btn-primary" style="width:120px;">Python</button>
                 </div><br>
             <!-- <div class="row well"> -->
-            <div id="demo">
-                    <form id="process" method="POST" action="">
-                        <div id="editor">{{code}}</div>
-                        <input type="hidden" id="code" name="code" value="hello" />
-                        <div class="row"><br>
-                            <button class="btn btn-primary" type="button" name="custom-test">Custom Test Case</button>
-                            <!-- <button class="btn btn-primary pull-right" type="button" name="run-code" style="width:120px; margin:0 10px">Run Code</button> -->
-                            <button class="btn btn-primary pull-right" type="button" onclick="doSubmit();" style="width:120px;">Submit</button>
-                            <br>
-                        </div>
-                    </form>
-                        <p>{{result}}</p>
-                        <br><br><br><br>
-            </div>
+            <form id="process" method="POST" action="">
+              <div class="row">
+                  <div id="editor">{{code}}</div>
+              </div>
+                <input type="hidden" id="code" name="code" value="hello" />
+                <div class="row"><br>
+                    <button class="btn btn-primary" type="button" name="custom-test">Custom Test Case</button>
+                    <button class="btn btn-primary pull-right" type="button" name="run-code" style="width:120px; margin:0px 10px">Run Code</button>
+                    <button class="btn btn-primary pull-right" type="button" onclick="doSubmit();" style="width:120px;">Submit</button>
+                    <br>
+                </div>
+            </form>
+                <p>{{result}}</p>
+                <br><br><br><br>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js"
