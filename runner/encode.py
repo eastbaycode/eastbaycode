@@ -1,9 +1,36 @@
 import re
-
+import io
 
 class Encoder:
     def __init__(self, proto):
         self.prototype = proto
+
+    def make_program(self, job):
+        # job contains prototype, code, inputs
+        # output is a complete runnable program
+        out = io.StringIO()
+        out.write("from encode import Encoder\n")
+        out.write(job['code'])
+        out.write("\n\ndef main():\n" "    inputs=")
+        out.write(str(job['inputs']))
+        out.write("\n    encoder = Encoder(")
+        out.write(str(job['prototype']))
+        out.write(")")
+        out.write("\n    user_function=")
+        out.write(job['prototype']['name'])
+        out.write("""
+    outputs = []
+    for input in inputs:
+        vars = encoder.decode_params(input)
+        rc = user_function(*vars)
+        encoded = encoder.encode_return(rc)
+        outputs.append(encoded)
+    print(str(outputs))
+
+if __name__ == "__main__":
+    main()
+        """)
+        return out.getvalue()
 
     def _encode_type(self, type, value):
         rc = ""
@@ -129,12 +156,12 @@ class Encoder:
 # example: def SayHello(who):
 # return "hello " + who
 # fn name: SayHello, return type: string, parameter: who, parameter type: string
-# protos = [
-#     {
-#       "name": "SayHello",
-#       "type": "string",
-#       "args": [{"name": "who", "type": "string"}]
-#     },
+protos = [
+     {
+       "name": "SayHello",
+       "type": "string",
+       "args": [{"name": "who", "type": "string"}]
+     }]
 #     {
 #       "name": "ReverseList",
 #       "type": "array",
@@ -154,8 +181,16 @@ class Encoder:
 #     }
 # ]
 #
-# encoder = Encoder(protos[1])
-# #encoded = encoder.encode_params([[3, 4, 5, 6]])
+job = {'code': """
+def SayHello(who):
+    return "hello " + who
+""",
+       'inputs': ['"Hien"', '"Paul"'],
+       'prototype': protos[0]}
+encoder = Encoder(protos[0])
+prog = encoder.make_program(job)
+print(prog)
+#encoded = encoder.encode_params([[3, 4, 5, 6]])
 # encoded = encoder.encode_return([3, 4, 5, 6])
 # print("encoded: " + encoded)
 # #params = encoder.decode_params(encoded)
