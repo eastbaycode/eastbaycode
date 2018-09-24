@@ -25,8 +25,7 @@ class Encoder:
         rc = user_function(*vars)
         encoded = encoder.encode_return(rc)
         outputs.append(encoded)
-    print(str(outputs))
-
+  
 if __name__ == "__main__":
     main()
         """)
@@ -92,7 +91,6 @@ if __name__ == "__main__":
         return rc, encoded
 
     def _encode_string(self, value):
-        print("encoding " + value)
         rc = '"{}"'.format(value)
         return rc
 
@@ -153,47 +151,49 @@ if __name__ == "__main__":
         }
 
 
-# example: def SayHello(who):
-# return "hello " + who
-# fn name: SayHello, return type: string, parameter: who, parameter type: string
-protos = [
-     {
-       "name": "SayHello",
-       "type": "string",
-       "args": [{"name": "who", "type": "string"}]
-     }]
-#     {
-#       "name": "ReverseList",
-#       "type": "array",
-#       "items": {"type" : "integer"},
-#       "args": [{"name": "nums", "type": "array", "items": {"type": "integer"}}]
-#     },
-#     {
-#       "name": "FindPrimes",
-#       "type": "array",
-#       "items": {"type": "integer"},
-#       "args": [{"name": "num", "type": "integer"}]
-#     },
-#     {
-#         "name": "JoinString",
-#         "type": "string",
-#         "args": [{"name": "words", "type": "array", "items": {"type": "string"}}]
-#     }
-# ]
-#
-job = {'code': """
-def SayHello(who):
-    return "hello " + who
-""",
-       'inputs': ['"Hien"', '"Paul"'],
-       'prototype': protos[0]}
-encoder = Encoder(protos[0])
-prog = encoder.make_program(job)
-print(prog)
-#encoded = encoder.encode_params([[3, 4, 5, 6]])
-# encoded = encoder.encode_return([3, 4, 5, 6])
-# print("encoded: " + encoded)
-# #params = encoder.decode_params(encoded)
-# params = encoder.decode_return(encoded)
-# print("decoded: " + str(params))
+def main():
+    # example: def SayHello(who):
+    # return "hello " + who
+    # fn name: SayHello, return type: string, parameter: who, parameter type: string
+    protos = [
+         {
+           "name": "SayHello",
+           "type": "string",
+           "args": [{"name": "who", "type": "string"}]
+         }]
+    #     {
+    #       "name": "ReverseList",
+    #       "type": "array",
+    #       "items": {"type" : "integer"},
+    #       "args": [{"name": "nums", "type": "array", "items": {"type": "integer"}}]
+    #     },
+    #     {
+    #       "name": "FindPrimes",
+    #       "type": "array",
+    #       "items": {"type": "integer"},
+    #       "args": [{"name": "num", "type": "integer"}]
+    #     },
+    #     {
+    #         "name": "JoinString",
+    #         "type": "string",
+    #         "args": [{"name": "words", "type": "array", "items": {"type": "string"}}]
+    #     }
+    # ]
+    #
+    job = {'code': """
+    def SayHello(who):
+        return "hello " + who
+    """,
+           'inputs': ['"Hien"', '"Paul"'],
+           'prototype': protos[0]}
+    encoder = Encoder(protos[0])
+    prog = encoder.make_program(job)
+    #encoded = encoder.encode_params([[3, 4, 5, 6]])
+    # encoded = encoder.encode_return([3, 4, 5, 6])
+    # print("encoded: " + encoded)
+    # #params = encoder.decode_params(encoded)
+    # params = encoder.decode_return(encoded)
+    # print("decoded: " + str(params))
 
+if __name__ == "__main__":
+    main()

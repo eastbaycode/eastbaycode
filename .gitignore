@@ -11,7 +11,7 @@ ssl.key
 app/config.py
 .DS_Store
 env/
-.gitignore
+.idea/
 
 
 # C extensions
