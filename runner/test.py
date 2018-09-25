@@ -9,14 +9,18 @@ def main():
             "type": "string",
             "args": [{"name": "who", "type": "string"}]
         }]
-    job = {'code': """
-def SayHello(who):
+    job = {'code': """def SayHello(who)]:
     return "hello " + who
         """,
            'inputs': ['"Hien"', '"Paul"'],
            'prototype': protos[0]}
     result = build_and_run_submit(job)
-    print(result)
+    if result['result'] == 'compiler_error':
+        print(result['error']['msg'])
+        print(result['error']['text'])
+        for i in range(result['error']['offset']-1):
+            print(" ",end="")
+        print("^")
 
 
 
