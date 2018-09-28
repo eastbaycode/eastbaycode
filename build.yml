@@ -1,0 +1,5 @@
+version: '3'
+services:
+  webapp:
+    image: webapp-image
+    build: webapp

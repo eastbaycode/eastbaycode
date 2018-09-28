@@ -1,0 +1,10 @@
+Problem: multiple running containers use the same image and we only want to build once.
+Solution: Two docker-compose files. One to build (build.yml), one to run (docker-compose.yml).
+usage:
+docker-compose -f build.yml build
+docker-compose run up
+
+Problem: containers depend on other containers running.
+Solution: https://github.com/ufoscout/docker-compose-wait
+The wait for is specified as host:port in docker-compose
+

@@ -1,6 +1,4 @@
 #!/bin/bash
-sleep 30
-echo "starting"
 export FLASK_APP=ebc.py
 flask db migrate
 flask db upgrade
