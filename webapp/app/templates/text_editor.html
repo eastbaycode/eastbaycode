@@ -39,6 +39,16 @@
 
                 <br><br><br><br>
     </div>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+    });
+    socket.on('answer', function(data) {
+        alert('got an answer!!' + data);
+    });
+</script>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js"
             type="text/javascript" charset="utf-8"></script>
