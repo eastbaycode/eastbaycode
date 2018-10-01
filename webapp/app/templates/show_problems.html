@@ -1,25 +1,41 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<table class='table'>
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Title</th>
-            <th>Creator</th>
-            <th>Question</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for problem in problems %}
-        <tr>
-            <td></td>
-            <td><a href="/problem/{{problem.id}}">{{problem.title}}</a></td>
-            <td>{{problem.creator_id}}</td>
-            <td>{{problem.question}}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container">
+    <h2>Problems</h2><br>
+    <p>Type the keywords to search the fields from table</p>
+    <input class="form-control" id="myInput" type="text" placeholder="Search.."><br>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Creator</th>
+                <th>Question</th>
+            </tr>
+        </thead>
+        <tbody id="myTable">
+            {% for problem in problems %}
+            <tr>
+                <td></td>
+                <td><a href="/problem/{{problem.id}}">{{problem.title}}</a></td>
+                <td>{{problem.creator_id}}</td>
+                <td>{{problem.question}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
 
 {% endblock %}

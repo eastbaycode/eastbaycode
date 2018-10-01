@@ -31,12 +31,15 @@ class Users(UserMixin, db.Model):
     avatar = db.Column(db.String(200))
     tokens = db.Column(db.Text)
     registered_date = db.Column(db.DateTime, default=datetime.utcnow)
-    problems = db.relationship("Problems", cascade="all,delete", backref='creator', lazy='dynamic')
+    problems = db.relationship("Problems", cascade="all,delete",
+                                backref='creator', lazy='dynamic')
     courses = db.relationship("Courses", cascade="all,delete", secondary=registrations,
                               backref=db.backref('student', lazy='dynamic'),
                               lazy='dynamic')
-    professor = db.relationship("Courses", cascade="all,delete", backref='professor', lazy='dynamic')
-    tasks = db.relationship("Task", backref='user', lazy='dynamic')
+    professor = db.relationship("Courses", cascade="all,delete",
+                                backref='professor', lazy='dynamic')
+    submission = db.relationship("Submissions", cascade="all,delete",
+                                backref='student', lazy='dynamic')
 
     def __repr__(self):
         return '<Users {0} {1} {2} {3}>'.format(self.id, self.name,
@@ -50,11 +53,15 @@ class Problems(db.Model):
     version = db.Column(db.Integer)
     question = db.Column(db.Text())
     solution = db.Column(db.Text())
-    examples = db.relationship("Examples", cascade="all,delete", backref='problem', lazy='dynamic')
-    testcases = db.relationship("TestCases", cascade="all,delete", backref='problem', lazy='dynamic')
+    examples = db.relationship("Examples", cascade="all,delete",
+                                backref='problem', lazy='dynamic')
+    testcases = db.relationship("TestCases", cascade="all,delete",
+                                backref='problem', lazy='dynamic')
+    submission = db.relationship("Submissions", cascade="all,delete",
+                                backref='problem', lazy='dynamic')
 
     def __repr__(self):
-        return "<Problems {}>".format(self.question)
+        return "<Problems {0} {1}>".format(self.title, self.question)
 
 class Examples(db.Model):
     __tablename__ = "examples"
@@ -86,7 +93,8 @@ class Courses(db.Model):
     startdate = db.Column(db.Date)
     enddate = db.Column(db.Date)
     semester = db.Column(db.String(120))
-    assignments = db.relationship("Assignments", cascade="all,delete", backref='course', lazy='dynamic')
+    assignments = db.relationship("Assignments", cascade="all,delete",
+                                   backref='course', lazy='dynamic')
 
     def professor(self):
         professor = Users.query.filter(self.professor_id==Users.id).first()
@@ -111,6 +119,7 @@ class Assignments(db.Model):
     def __repr__(self):
         return "<Assignments {0} {1}>".format(course_id, problems)
 
+<<<<<<< HEAD
 
 class Task(db.Model):
     id = db.Column(db.String(36), primary_key=True)
@@ -129,3 +138,28 @@ class Task(db.Model):
     def is_complete(self):
         job = self.get_rq_job()
         return job.meta.get('complete')
+=======
+class Submissions(db.Model):
+    __tablename__ = 'submissions'
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    problem_id = db.Column(db.Integer, db.ForeignKey('problems.id'), nullable=False)
+    submission = db.Column(db.Text())
+    sub_result = db.relationship("SubmissionResults", cascade="all,delete",
+                                  backref='submission', lazy='dynamic')
+
+    def __repr__(self):
+        return "<Submissions {} {} {}".format(self.student_id,
+                                    self.problem_id, self.submission)
+
+class SubmissionResults(db.Model):
+    __tablename__ = 'submission_results'
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    submission_id = db.Column(db.Integer, db.ForeignKey('submissions.id'), nullable=False)
+    status = db.Column(db.Boolean)
+    failed_test_id = db.Column(db.Integer)
+    output = db.Column(db.Text())
+
+    def __repr__(self):
+        return "<SubmissionResults {} {} {}".format(self.status,
+                                    self.output, self.failed_test_id)

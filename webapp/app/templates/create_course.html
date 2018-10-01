@@ -3,30 +3,40 @@
 {% block body %}
 <div class="container">
     <h1>Create New Course</h1>
-    <form action="" method="post">
+    <form class="form-horizontal" action="" method="post">
+        <!-- <div class="form-group">
+            <label class="control-label col-sm-2" for="email">{{ form.title.label }}</label>
+            <div class="col-sm-10">
+                <input type="" class="form-control" id="email" placeholder="Enter title">
+            </div>
+        </div> -->
+
         {{ form.hidden_tag() }}
         {{ form.title.label}}<br>
-        {{ form.title(cols=160, rows=40)}}<br>
+        {{ form.title(size=48)}}<br>
         {% for error in form.title.errors %}
         <span style='color:red;'>[{{ error }}]</span>
         {% endfor %}
         {{ form.startdate.label}}<br>
-        {{ form.startdate(cols=160, rows=40)}}<br>
+        {{ form.startdate(size=48)}}<br>
         {% for error in form.startdate.errors %}
         <span style='color:red;'>[{{ error }}]</span>
         {% endfor %}
         {{ form.enddate.label}}<br>
-        {{ form.enddate(cols=80, rows=40)}}<br>
+        {{ form.enddate(size=48)}}<br>
         {% for error in form.enddate.errors %}
         <span style='color:red;'>[{{ error }}]</span>
         {% endfor %}
         {{ form.semester.label}}<br>
-        {{ form.semester(cols=80, rows=40)}}<br>
+        {{ form.semester(size=48)}}<br>
         {% for error in form.semester.errors %}
         <span style='color:red;'>[{{ error }}]</span>
         {% endfor %}
+        <br>
         <p>{{ form.submit() }}</p>
+
     </form>
+
 </div>
 
 {% endblock %}

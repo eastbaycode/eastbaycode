@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, IntegerField, FieldList, FormField
-from wtforms import DateField
+from wtforms import DateField, SelectField, SelectMultipleField
+from wtforms_sqlalchemy.fields import QuerySelectField
 from wtforms.validators import ValidationError, DataRequired
 from app.models import Users, Problems
 
@@ -24,5 +25,11 @@ class CourseForm(FlaskForm):
     title = StringField("Course title", validators=[DataRequired()])
     startdate = DateField("Start date (mm/dd/yyyy)", format='%m/%d/%Y')
     enddate = DateField("End date (mm/dd/yyyy)", format='%m/%d/%Y')
-    semester = StringField("Semester ex: Fall 2018")
+    semester = StringField("Semester (Fall 2018)")
+    submit = SubmitField('Submit')
+
+class AssignmentForm(FlaskForm):
+    problem = SelectMultipleField("Problems")
+    startdate = DateField("Start date (mm/dd/yyyy)", format='%m/%d/%Y')
+    enddate = DateField("End date (mm/dd/yyyy)", format='%m/%d/%Y')
     submit = SubmitField('Submit')

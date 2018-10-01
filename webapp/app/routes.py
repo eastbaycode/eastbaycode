@@ -1,12 +1,13 @@
 import json
 import time
-from flask import render_template, flash, request, redirect, url_for, session
+from flask import render_template, flash, request, redirect, url_for, session, jsonify
 from flask_login import login_required, login_user, current_user, logout_user
 from flask_debugtoolbar import DebugToolbarExtension
 from app import app
 from app import db
 from app.models import Problems, Users, TestCases, Examples, Courses, Assignments
-from app.forms import QuestionForm, TestCaseForm, ExamplesForm, CourseForm
+from app.models import Submissions
+from app.forms import QuestionForm, TestCaseForm, ExamplesForm, CourseForm, AssignmentForm
 from app.login_google import get_google_auth
 from config import Config
 from requests.exceptions import HTTPError
@@ -81,16 +82,28 @@ def create_question():
         db.session.add(problem)
         db.session.commit()
         flash('Your question is created!')
-        return redirect(url_for('show_problems'))
+        return 'Your question is created!'
     return render_template('create_prob.html', form=form)
 
-@app.route('/create/assignment')
+@app.route('/create_assignment/<int:course_id>', methods=['GET', 'POST'])
 @login_required
-def create_assignment():
+def create_assignment(course_id):
     # choose course from drop down list
     # choose problems from drop downlist
-
-    pass
+    problems = Problems.query.filter_by(creator_id=current_user._get_current_object().id).all(  )
+    form = AssignmentForm()
+    form.problem.choices = problems
+    if form.validate_on_submit():
+        # write the select problem into Assignments
+        assignment = Assignments(course_id=course_id,
+                                problems=form.problem.data,
+                                startdate=form.startdate.data,
+                                enddate=form.enddate.data)
+        db.session.add(assignment)
+        db.session.commit()
+        flash('Your assignment is created!')
+        return redirect(url_for('index'))
+    return render_template('create_assignment.html', form=form)
 
 @app.route('/profile')
 @login_required
@@ -160,19 +173,47 @@ def displayTextEditor(id):
 
     if request.method == 'POST':
         code = request.form['code']
-        input_list=["bhavik"]
+        if code:
+            submission = Submissions(student_id=current_user._get_current_object().id,
+                                    problem_id=id, submission=code)
+            db.session.add(submission)
+            db.session.commit()
 
-        # result = runcode(code, inputs) - just for subprocess.run
-        # push msg to redis queue
-        msg = json.dumps({"code": code, "inputs": input_list,
-                          "prototype": "def sayHello(s)","handle": 38})
-        push_msg(qname="work", msg=msg)
-        time.sleep(10)
-        result = get_result(qname="result")
-        # inputs = problem.testcases.all()
-        # return redirect(url_for(displayTextEditor))
+        # input_list=["bhavik"]
+        #
+        # # result = runcode(code, inputs) - just for subprocess.run
+        # # push msg to redis queue
+        # msg = json.dumps({"code": code, "inputs": input_list,
+        #                   "prototype": "def sayHello(s)","handle": 38})
+        # push_msg(qname="work", msg=msg)
+        # time.sleep(10)
+        # result = get_result(qname="result")
+        # # inputs = problem.testcases.all()
+        # # return redirect(url_for(displayTextEditor))
     return render_template("text_editor.html", code=code, inputs=testcase,
                             problem=problem, result = result)
+
+@app.route("/test/<int:id>")
+def testAjax(id):
+    code = ''
+    result = ''
+    problem = Problems.query.filter_by(id=id).first()
+    testcase = problem.testcases.all()
+    input_list = []
+    for t in testcase:
+        input_list.append(t.input)
+    print(input_list)
+    return render_template("submission.html", code=code, inputs=testcase,
+                            problem=problem, result = result)
+
+@app.route("/_process", methods=['POST'])
+def process():
+    code = request.form['code']
+    if code:
+        return jsonify({'code': code})
+
+    return jsonify({'error': 'Missing data!'})
+
 
 @app.route('/logout')
 @login_required

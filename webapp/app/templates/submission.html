@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+<script src="{{ url_for('static', filename='js/submit-form.js') }}"></script>
+{% block body %}
+        <div class="container">
+            <div class="row well">
+                <h4>CS1 -> Assignment 3 -> Problem 3</h4>
+            </div>
+            <div class="row well">
+                <p><strong>Question {{problem.id}}: {{problem.title}}</strong></p>
+                <p>{{problem.question}}</p>
+                {% for e in problem.examples %}
+                <p><b>Example {{e['id']}}: </b></p>
+                <ul>
+                    <p><strong>Input:</strong> {{e['input']}}</p>
+                    <p><strong>Output:</strong> {{e['output']}}</p>
+                </ul>
+                {% endfor %}
+            </div>
+            <div class="row">
+                <button class="btn btn-primary" style="width:120px;">Python</button>
+                </div><br>
+            <!-- <div class="row well"> -->
+            <form id="process" method="POST" action="">
+              <div class="row">
+                  <div id="editor">{{code}}</div>
+              </div>
+                <input type="hidden" id="code" name="code" value="hello" />
+                <div class="row"><br>
+                    <button class="btn btn-primary" type="button" name="custom-test">Custom Test Case</button>
+                    <button class="btn btn-primary pull-right" type="submit" name="run-code" style="width:120px; margin:0px 10px">Run Code</button>
+                    <button class="btn btn-primary pull-right" type="button" onclick="doSubmit();" style="width:120px;">Submit</button>
+                    <br>
+                </div>
+            </form>
+                {% for i in inputs %}
+                <p>Input {{ i.id}}: {{ i.input }}</p>
+                {% endfor %}
+                {{ result }}
+
+                <div id="successAlert" class="alert alert-success" role="alert" style="display=none;"></div>
+                <div id="errorAlert" class="alert alert-success" role="alert" style="display=none;"></div>
+
+                <br><br><br><br>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js"
+    type="text/javascript" charset="utf-8"></script>
+    <script>
+    var textarea = $('#content');
+
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/twilight");
+    editor.getSession().setMode("ace/mode/python");
+
+    // function doSubmit(){
+    //     var code = editor.getSession().getValue();
+    //     document.getElementById("code").value = code;
+    //     document.getElementById("process").submit();
+    //
+    // }
+    $(document).ready(function(){
+        $('form').on('submit', function(event) {
+            $.ajax({
+                data : {
+                    code : editor.getSession().getValue()
+                },
+                type : 'POST',
+                url : '/_process'
+            })
+            .done(function(data){
+                if (data.error){
+                    $('#errorAlert').text(data.error).show();
+                    $('#successAlert').hide();
+                }
+                else{
+                    $('#successAlert').text(data.code).show();
+                    $('#errorAlert').hide();
+                }
+            });
+            event.preventDefault();
+        });
+    });
+
+    </script>
+{% endblock %}
