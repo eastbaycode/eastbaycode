@@ -179,6 +179,11 @@ def displayTextEditor(id):
             db.session.add(submission)
             db.session.commit()
 
+            if current_user.get_task_in_progress('running'):
+                flash(_('a task is currently in progress'))
+            else:
+                current_user.launch_task('example', 20)
+
         # input_list=["bhavik"]
         #
         # # result = runcode(code, inputs) - just for subprocess.run
@@ -210,6 +215,10 @@ def testAjax(id):
 def process():
     code = request.form['code']
     if code:
+        if current_user.get_task_in_progress('running'):
+            flash(_('a task is currently in progress'))
+        else:
+            current_user.launch_task('tasks', _('running_code'))
         return jsonify({'code': code})
 
     return jsonify({'error': 'Missing data!'})

@@ -11,8 +11,6 @@ services:
             WAIT_HOSTS: eastbaycode_redis_1:6379, eastbaycode_db_1:3306 
   db:
     image: mysql/mysql-server:5.7
-    ports:
-    - "3306:3306"
     environment:
       - MYSQL_DATABASE=ebcode
       - MYSQL_USER=ebcode
