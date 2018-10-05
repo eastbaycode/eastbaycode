@@ -1,19 +1,26 @@
 import time
 from rq import get_current_job
 from app.models import Task
+import requests
 
-# from app import app
-# app.app_context().push()
 
-def example(seconds):
-    job = get_current_job()
-    print('Staring task')
-    for i in range(seconds):
+
+
+def example(sid):
+    #job = get_current_job()
+    print('Staring task: ', sid)
+    for i in range(5):
         print(i)
         time.sleep(1)
-    job.meta['result'] = "finished"
-    job.save_meta()
-    print('Task completed')
+
+    #job.meta['result'] = "finished"
+    #job.save_meta()
+
+    url = 'https://eastbaycode_webapp_1:5000/runner_done'
+    data = {'sid': sid}
+    r = requests.post(url = url, data = data, verify=False)
+    print('Task completed: ', r)
+
 
 def _set_task_progress(progress):
     job = get_current_job()

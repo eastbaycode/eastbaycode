@@ -41,12 +41,12 @@
     </div>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    var socket = io.connect('https://localhost:5000/');
     socket.on('connect', function() {
         socket.emit('my event', {data: 'I\'m connected!'});
     });
     socket.on('answer', function(data) {
-        alert('got an answer!!' + data);
+        alert('got an answer!! ');
     });
 </script>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
@@ -60,9 +60,8 @@
             editor.getSession().setMode("ace/mode/python");
 
             function doSubmit(){
-                var code = editor.getSession().getValue();
-                document.getElementById("code").value = code;
-                document.getElementById("process").submit();
+                var user_code = editor.getSession().getValue();
+                socket.emit('submit_code', {code: user_code});
             }
 
     </script>

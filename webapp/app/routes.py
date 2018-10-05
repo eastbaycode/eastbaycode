@@ -12,6 +12,8 @@ from app.login_google import get_google_auth
 from config import Config
 from requests.exceptions import HTTPError
 from app.msgqueue import push_msg, get_result
+from flask_socketio import send, emit
+from app import socketio
 
 @app.route('/')
 @login_required
@@ -179,10 +181,6 @@ def displayTextEditor(id):
             db.session.add(submission)
             db.session.commit()
 
-            if current_user.get_task_in_progress('running'):
-                flash(_('a task is currently in progress'))
-            else:
-                current_user.launch_task('example', 20)
 
         # input_list=["bhavik"]
         #
@@ -211,17 +209,14 @@ def testAjax(id):
     return render_template("submission.html", code=code, inputs=testcase,
                             problem=problem, result = result)
 
-@app.route("/_process", methods=['POST'])
-def process():
-    code = request.form['code']
-    if code:
-        if current_user.get_task_in_progress('running'):
-            flash(_('a task is currently in progress'))
-        else:
-            current_user.launch_task('tasks', _('running_code'))
-        return jsonify({'code': code})
-
-    return jsonify({'error': 'Missing data!'})
+@app.route("/runner_done", methods=['POST'])
+def runner_done():
+    data = request.form
+    sid = data['sid']
+    json = {}
+    socketio.emit('answer', json, room=sid)
+    print("The runner is done.")
+    return "thanks"
 
 
 @app.route('/logout')
@@ -229,3 +224,30 @@ def process():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@socketio.on('connect')
+def socket_connect():
+    print("connection ", request.sid)
+    session['websocket'] = request.sid
+
+@socketio.on('disconnect')
+def socket_disconnect():
+    pass
+
+
+@socketio.on('aaa')
+def handle_aaa(json):
+    print("received aaaa: ", str(json))
+    emit('aaa_response', {'data': 'Server'})
+
+@socketio.on('message')
+def handle_message(message):
+    print('received message: ' + message)
+
+@socketio.on('my event')
+def handle_my_custom_event(json):
+    emit('answer', json)
+
+@socketio.on('submit_code')
+def handle_my_custom_event(json):
+    rq_job = app.task_queue.enqueue('app.tasks.example', request.sid)
