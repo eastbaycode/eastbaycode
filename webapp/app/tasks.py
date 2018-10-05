@@ -3,6 +3,8 @@ from rq import get_current_job
 from app.models import Task
 import requests
 
+# from app import app
+# app.app_context().push()
 
 
 
